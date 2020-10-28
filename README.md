@@ -1,4 +1,4 @@
-# romident
+# SEGA Rom Identifier
 
 Shows information about various SEGA arcade roms, including:
 
