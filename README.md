@@ -1,4 +1,4 @@
-[![Actions Status](https://github.com/bobbydilley/rominfo/workflows/build-python-app/badge.svg)](https://github.com/bobbydilley/rominfo/actions)
+[![Actions Status](https://github.com/bobbydilley/rominfo/workflows/build/badge.svg)](https://github.com/bobbydilley/rominfo/actions)
 
 # SEGA Rom Info Utility
 
