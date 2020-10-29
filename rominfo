@@ -1,0 +1,104 @@
+#!/usr/bin/env python3
+
+import sys
+import mmap
+import struct
+
+def test_naomi_header(magic = b'NAOMI'):
+	offset = 4194304
+	file.seek(0)
+	if file.read(len(magic)) == magic:
+		return (True, 0)
+	file.seek(offset)
+	if file.read(len(magic)) == magic:
+		return (True, offset)
+	return (False, 0)
+
+def test_BTID_header():
+	with mmap.mmap(file.fileno(), 0, access=mmap.ACCESS_READ) as s:
+		result = s.find(b'BTID')
+		if result != -1:
+			return (True, result)
+	return (False, 0)
+
+def print_common_info(system = "Unknown", game_id = "Unknown", manufacturer = "Unknown", date = "Unknown"):
+	print("System:      ", system)
+	print("Game ID:     ", game_id)
+	print("Manufacturer:", manufacturer)
+	print("Date:        ", date)
+
+def process_naomi_header(system_name):
+	file.seek(offset + 16)
+	manufacturer = file.read(32).decode("utf-8")
+	name_japan = file.read(32).decode("utf-8")
+	name_usa = file.read(32).decode("utf-8")
+	name_export = file.read(32).decode("utf-8")
+	name_korea = file.read(32).decode("utf-8")
+	name_australia = file.read(32).decode("utf-8")
+	name_6 = file.read(32).decode("utf-8")
+	name_7 = file.read(32).decode("utf-8")
+	name_8 = file.read(32).decode("utf-8")
+	year = struct.unpack('<H', file.read(2))[0]
+	month = ord(file.read(1))
+	day = ord(file.read(1))
+	date = "{0:02d}-{1:02d}-{2:04d}".format(day, month, year)
+	game_id = file.read(4).decode("utf-8")
+	if game_id[0:2] == "AW":
+		system_name = system_name + " (Atomiswave Convert)"
+	print_common_info(system_name, game_id, manufacturer, date)
+	print("Name JPN:    ", name_japan)
+	print("Name USA:    ", name_usa)
+	print("Name EXP:    ", name_export)
+	print("Name KOR:    ", name_korea)
+	print("Name AUS:    ", name_australia)
+
+if __name__ == "__main__":
+	if len(sys.argv) < 2:
+		print("Usage: rominfo ROM_PATH")
+		exit(1)
+
+	file = open(sys.argv[1], "rb")
+	
+	# Naomi 1 Header Check
+	(result, offset) = test_naomi_header()
+	if result:
+		process_naomi_header("NAOMI")
+		exit(0)
+
+	# Naomi 2 Header Check
+	(result, offset) = test_naomi_header(b'Naomi2')
+	if result:
+		process_naomi_header("NAOMI 2")
+		exit(0)
+
+	# Chihiro / Triforce Header Check
+	(result, offset) = test_BTID_header()
+	if result:
+		file.seek(offset + 32)
+		ident = file.read(4)
+		system = "Unknown"
+		if ident == b'GCAM':
+			system = "Triforce"
+		elif ident == b'XBAM':
+			system = "Chihiro"
+		file.seek(offset + 40)
+		year = struct.unpack('>H', file.read(2))[0]
+		month = ord(file.read(1))
+		day = ord(file.read(1))
+		date = "{0:02d}-{1:02d}-{2}".format(day, month, year)
+		file.seek(offset + 0x2e)
+		type_3_compatible = ord(file.read(1))
+		file.seek(offset + 0x30)
+		game_id = file.read(4).decode("utf-8")
+		file.seek(offset + 0x60)
+		manufacturer = file.read(32).decode("utf-8")
+		game_name = file.read(32).decode("utf-8")
+		print_common_info(system, game_id, manufacturer, date)
+		print("Name:        ", game_name)
+		if system == "Chihiro":
+			print("Type 3:      ", "SUPPORTED" if type_3_compatible else "NOT SUPPORTED", "({})".format(type_3_compatible))
+
+		exit(0)
+
+	print("Not an arcade rom")
+	exit(1)
