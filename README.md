@@ -1,4 +1,6 @@
-# SEGA Rom Identifier
+[![Actions Status](https://github.com/bobbydilley/rominfo/workflows/build-python-app/badge.svg)](https://github.com/bobbydilley/rominfo/actions)
+
+# SEGA Rom Info Utility
 
 Shows information about various SEGA arcade roms, including:
 
