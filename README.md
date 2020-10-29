@@ -25,5 +25,7 @@ Name:         F-ZERO AX
 Using pip3, you can install straight form the git repo.
 
 ```
-$ python -m pip3 install git+https://github.com/bobbydilley/romident
+$ sudo pip3 install git+https://github.com/bobbydilley/rominfo
 ```
+
+Alternatively you can download the single python file [here](https://github.com/bobbydilley/rominfo/raw/master/rominfo)
