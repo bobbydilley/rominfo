@@ -9,10 +9,10 @@ Shows information about various SEGA arcade roms, including:
 
 ## Usage
 
-Simply pass a file path to the `romident` command and you will see all of the information about the rom:
+Simply pass a file path to the `rominfo` command and you will see all of the information about the rom:
 
 ```
-$ romident FZeroAx.bin 
+$ rominfo FZeroAx.bin 
 System:       Triforce
 Game ID:      SBGG
 Manufacturer: SEGA CORPORATION
@@ -22,7 +22,7 @@ Name:         F-ZERO AX
 
 ## Installation
 
-Using pip3, you can install straight form the git repo.
+Using pip3, you can install straight from the git repo.
 
 ```
 $ sudo pip3 install git+https://github.com/bobbydilley/rominfo
