@@ -86,6 +86,13 @@ if __name__ == "__main__":
 			year = struct.unpack('<H', file.read(2))[0]
 			month = ord(file.read(1))
 			day = ord(file.read(1))
+
+			# Wangan Midnight Maximum Tune writes it in
+			# hex values, so you need to convert it.
+			if year > 2020:
+				year = int(hex(year)[2:])
+				month = int(hex(month)[2:])
+				day = int(hex(day)[2:])
 		else:
 			year = struct.unpack('>H', file.read(2))[0]
 			month = ord(file.read(1))
