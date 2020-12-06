@@ -41,7 +41,7 @@ def process_naomi_header(system_name):
 	year = struct.unpack('<H', file.read(2))[0]
 	month = ord(file.read(1))
 	day = ord(file.read(1))
-	date = "{0:02d}-{1:02d}-{2:04d}".format(day, month, year)
+	date = "{:04d}-{:02d}-{:02d}".format(year, month, day)
 	game_id = file.read(4).decode("utf-8")
 	if game_id[0:2] == "AW":
 		system_name = system_name + " (Atomiswave Convert)"
@@ -82,10 +82,15 @@ if __name__ == "__main__":
 		elif ident == b'XBAM':
 			system = "Chihiro"
 		file.seek(offset + 40)
-		year = struct.unpack('>H', file.read(2))[0]
-		month = ord(file.read(1))
-		day = ord(file.read(1))
-		date = "{0:02d}-{1:02d}-{2}".format(day, month, year)
+		if system == "Chihiro":
+			year = struct.unpack('<H', file.read(2))[0]
+			month = ord(file.read(1))
+			day = ord(file.read(1))
+		else:
+			year = struct.unpack('>H', file.read(2))[0]
+			month = ord(file.read(1))
+			day = ord(file.read(1))
+		date = "{}-{:02d}-{:02d}".format(year, month, day)
 		file.seek(offset + 0x2e)
 		type_3_compatible = ord(file.read(1))
 		file.seek(offset + 0x30)
