@@ -18,7 +18,7 @@ $ rominfo FZeroAx.bin
 System:       Triforce
 Game ID:      SBGG
 Manufacturer: SEGA CORPORATION
-Date:         28-06-2003
+Date:         2003-06-28
 Name:         F-ZERO AX
 ```
 
