@@ -30,4 +30,8 @@ Using pip3, you can install straight from the git repo.
 $ sudo pip3 install git+https://github.com/bobbydilley/rominfo
 ```
 
-Alternatively you can download the single python file [here](https://github.com/bobbydilley/rominfo/raw/master/rominfo)
+Alternatively you can download the single python file [here](https://github.com/bobbydilley/rominfo/raw/master/rominfo) and run it using python3:
+
+```
+$ python3 rominfo FZeroAx.bin
+```
