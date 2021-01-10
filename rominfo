@@ -23,9 +23,12 @@ def test_BTID_header():
 
 def print_common_info(system = "Unknown", game_id = "Unknown", manufacturer = "Unknown", date = "Unknown"):
 	print("System:      ", system)
-	print("Game ID:     ", game_id)
-	print("Manufacturer:", manufacturer)
-	print("Date:        ", date)
+	if game_id != "Unknown":
+		print("Game ID:     ", game_id)
+	if manufacturer != "Unknown":
+		print("Manufacturer:", manufacturer)
+	if date != "Unknown":
+		print("Date:        ", date)
 
 def process_naomi_header(system_name):
 	file.seek(offset + 16)
@@ -71,7 +74,7 @@ if __name__ == "__main__":
 		process_naomi_header("NAOMI 2")
 		exit(0)
 
-	# Chihiro / Triforce Header Check
+	# Chihiro / Triforce / Lindbergh Header Check
 	(result, offset) = test_BTID_header()
 	if result:
 		file.seek(offset + 32)
@@ -81,36 +84,53 @@ if __name__ == "__main__":
 			system = "Triforce"
 		elif ident == b'XBAM':
 			system = "Chihiro"
-		file.seek(offset + 40)
-		if system == "Chihiro":
+		
+		if system != "Unknown":
+			file.seek(offset + 40)
+			if system == "Chihiro":
+				year = struct.unpack('<H', file.read(2))[0]
+				month = ord(file.read(1))
+				day = ord(file.read(1))
+
+				# Wangan Midnight Maximum Tune writes it in
+				# hex values, so you need to convert it.
+				if year > 2020:
+					year = int(hex(year)[2:])
+					month = int(hex(month)[2:])
+					day = int(hex(day)[2:])
+			else:
+				year = struct.unpack('>H', file.read(2))[0]
+				month = ord(file.read(1))
+				day = ord(file.read(1))
+			date = "{}-{:02d}-{:02d}".format(year, month, day)
+			file.seek(offset + 0x2e)
+			type_3_compatible = ord(file.read(1))
+			file.seek(offset + 0x30)
+			game_id = file.read(4).decode("utf-8")
+			file.seek(offset + 0x60)
+			manufacturer = file.read(32).decode("utf-8")
+			game_name = file.read(32).decode("utf-8")
+			print_common_info(system, game_id, manufacturer, date)
+			print("Name:        ", game_name)
+			if system == "Chihiro":
+				print("Type 3:      ", "SUPPORTED" if type_3_compatible else "NOT SUPPORTED", "({})".format(type_3_compatible))
+			exit(0)
+
+		file.seek(offset + 4)
+		if file.read(1) == b'\x00':
+			system = "Lindbergh"
+			file.seek(offset + 8)
+			game_id = file.read(4).decode("utf-8")
 			year = struct.unpack('<H', file.read(2))[0]
 			month = ord(file.read(1))
 			day = ord(file.read(1))
-
-			# Wangan Midnight Maximum Tune writes it in
-			# hex values, so you need to convert it.
-			if year > 2020:
-				year = int(hex(year)[2:])
-				month = int(hex(month)[2:])
-				day = int(hex(day)[2:])
-		else:
-			year = struct.unpack('>H', file.read(2))[0]
-			month = ord(file.read(1))
-			day = ord(file.read(1))
-		date = "{}-{:02d}-{:02d}".format(year, month, day)
-		file.seek(offset + 0x2e)
-		type_3_compatible = ord(file.read(1))
-		file.seek(offset + 0x30)
-		game_id = file.read(4).decode("utf-8")
-		file.seek(offset + 0x60)
-		manufacturer = file.read(32).decode("utf-8")
-		game_name = file.read(32).decode("utf-8")
-		print_common_info(system, game_id, manufacturer, date)
-		print("Name:        ", game_name)
-		if system == "Chihiro":
-			print("Type 3:      ", "SUPPORTED" if type_3_compatible else "NOT SUPPORTED", "({})".format(type_3_compatible))
-
-		exit(0)
+			date = "{}-{:02d}-{:02d}".format(year, month, day)
+			manufacturer = "Unknown"
+			file.seek(offset + 4 + 56 + 12)
+			game_name = file.read(64).decode("utf-8")
+			print_common_info(system, game_id, manufacturer, date)
+			print("Name:        ", game_name)
+			exit(0)
 
 	print("Not an arcade rom")
 	exit(1)
